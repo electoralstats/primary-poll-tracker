@@ -1,0 +1,21 @@
+import numpy as np
+#The kalman method takes a numpy array called "polls" which has n rows, each with 3 columns. The 1st column is the date of the poll, given as a date object, the 2nd column is the poll value, given as an integer, the 3rd column is the sample size.
+def kalman(polls):
+    #The first step is to sort the polls so the 1st row is the oldest poll, the n-th row is the newest poll
+    polls = sorted(polls, key=lambda x: x[0])
+    dates = [x[0] for x in polls]
+    #Next, we initialize the values of the Kalman filter for the first poll
+    estimates = [polls[0][1]/100.0]
+    weight = 1
+    variance = (polls[0][1]/100.0)*(1-polls[0][1]/100.0)/polls[0][2]
+    uncerts = [variance]
+    return uncerts
+    for p in range(1,len(polls)):
+        val = polls[p][1]/100.0
+        variance = val*(1-val)/polls[p][2]
+        weight = uncerts[p-1]/(uncerts[p-1]+variance)
+        newEstimate = weight*val + (1-weight)*estimates[p-1]
+        estimates.append(newEstimate)
+        newUncert = uncerts[p-1]*(1-weight) + variance
+        uncerts.append(newUncert)
+    return dates, estimates, uncerts

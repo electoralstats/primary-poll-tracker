@@ -1,0 +1,48 @@
+#!/usr/bin/python2
+from pollster import Pollster
+import MySQLdb as mariadb
+import sys
+username = open('../.username').read().replace("\n", "")
+passw = open('../.password').read().replace("\n", "")
+dbName = open('../.database').read().replace("\n", "")
+normalColumns = ['Pollster', 'StartDate', 'EndDate', 'Partisan', 'Affiliation', 'Method', 'Sample', 'SampleType']
+
+def updateTableStructure():
+    mariadb_conn = mariadb.connect(user = username, passwd = passw, db = dbName)
+    cursor = mariadb_conn.cursor()
+    try:
+        cursor.execute("CREATE TABLE DemPrimary (Pollster varchar(255), StartDate date, EndDate date, Partisan varchar(255), Affiliation varchar(255), Method varchar(255) Sample int, SampleType varchar(255));")
+    except mariadb.Error as err:
+        if err[0] == 1050:
+            pass
+        else:
+            print err
+            sys.exit()
+    try:
+        cursor.execute("CREATE TABLE RepubPrimary (Pollster varchar(255), StartDate date, EndDate date, Partisan varchar(255), Affiliation varchar(255), Method varchar(255) Sample int, SampleType varchar(255));")
+    except mariadb.Error as err:
+        if err[0] == 1050:
+            pass
+        else:
+            print err
+            sys.exit()
+    mariadb_conn.commit()
+    demCandidates = [x.replace('\n', '') for x in open('dem-candidates.txt').readlines()]
+    cursor.execute("SHOW columns FROM DemPrimary")
+    demColumns = [x[0] for x in cursor.fetchall()]
+    for d in demCandidates:
+        if d not in demColumns:
+            cursor.execute("ALTER TABLE DemPrimary ADD %(cand)s float;" %{"cand":d})
+    for d2 in demColumns:
+        if d2 not in normalColumns and d2 not in demCandidates:
+            cursor.execute("ALTER TABLE DemPrimary DROP %(cand)s;" %{"cand":d2})
+    repubCandidates = [x.replace('\n', '') for x in open('repub-candidates.txt').readlines()]
+    cursor.execute("SHOW columns FROM RepubPrimary")
+    repubColumns = [x[0] for x in cursor.fetchall()]
+    for r in repubCandidates:
+        if r not in repubColumns:
+            cursor.execute("ALTER TABLE RepubPrimary ADD %(cand)s float;" %{"cand":r})
+    for r2 in demColumns:
+        if r2 not in normalColumns and r2 not in repubCandidates:
+            cursor.execute("ALTER TABLE RepubPrimary DROP %(cand)s;" %{"cand":r2})
+    mariadb_conn.commit()

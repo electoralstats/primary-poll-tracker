@@ -1,0 +1,12 @@
+#!/usr/bin/python2
+import PollFetcher
+import sys
+sys.path.insert(0, '~/ES/advanced-kalman')
+import KalmanFilter
+import matplotlib
+import numpy as np
+import MySQLdb as mariadb
+
+def getEstimates():
+    dems, repubs = PollFetcher.fetchPolls()
+    
