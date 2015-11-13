@@ -1,4 +1,4 @@
-primary-poll-tracker is the Electoral Statistics tool to track national standing in the 2016 Presidential primaries.
+primary-poll-tracker is the Electoral Statistics tool to track national standing in the 2016 Presidential primaries. Methodology is explained [here](http://electoralstatistics.com/primary-poll-tracker-methodology/).
 
 PollFetcher.py fetches the polls from [Pollster](http://elections.huffingtonpost.com/pollster) and puts them in a MySQL database. The script first adjusts the MySQL database according to the candidate lists dem-candidates.txt and repub-candidates.txt and then fetches polling for all of those candidates
 
