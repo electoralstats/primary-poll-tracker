@@ -1,3 +1,4 @@
+#!/bin/python2
 import numpy as np
 #The kalman method takes a numpy array called "polls" which has n rows, each with 3 columns. The 1st column is the date of the poll, given as a date object, the 2nd column is the poll value, given as an integer, the 3rd column is the sample size.
 def kalman(polls):
